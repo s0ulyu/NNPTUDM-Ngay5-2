@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Dashboard</title>
+    <!-- Nhúng Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .img-thumbnail-custom { width: 50px; height: 50px; object-fit: cover; }
+        tr:hover { cursor: pointer; background-color: #f8f9fa; }
+        .sort-btn { cursor: pointer; text-decoration: underline; color: blue; }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <h2 class="mb-4 text-center">PRODUCT DASHBOARD</h2>
+        
+        <!-- Control Panel: Tìm kiếm, Phân trang, Nút chức năng -->
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <input type="text" id="searchInput" class="form-control" placeholder="Tìm kiếm theo tiêu đề (Title)...">
+            </div>
+            <div class="col-md-3">
+                <select id="pageSize" class="form-select">
+                    <option value="5">Hiển thị 5 dòng/trang</option>
+                    <option value="10" selected>Hiển thị 10 dòng/trang</option>
+                    <option value="20">Hiển thị 20 dòng/trang</option>
+                </select>
+            </div>
+            <div class="col-md-5 text-end">
+                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createModal">Tạo mới (Create)</button>
+                <button class="btn btn-warning" onclick="exportCSV()">Export CSV</button>
+            </div>
+        </div>
+
+        <!-- Bảng hiển thị dữ liệu -->
+        <table class="table table-bordered table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Hình ảnh</th>
+                    <th>
+                        Title <span class="sort-btn" onclick="sortData('title')">↕</span>
+                    </th>
+                    <th>
+                        Price ($) <span class="sort-btn" onclick="sortData('price')">↕</span>
+                    </th>
+                    <th>Category</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <!-- Dữ liệu JS sẽ được render ở đây -->
+            </tbody>
+        </table>
+
+        <!-- Phân trang -->
+        <div class="d-flex justify-content-between align-items-center">
+            <span id="pageInfo"></span>
+            <div>
+                <button class="btn btn-outline-primary btn-sm" onclick="prevPage()">Trang trước</button>
+                <button class="btn btn-outline-primary btn-sm" onclick="nextPage()">Trang sau</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: View Detail & Edit -->
+    <div class="modal fade" id="detailModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Chi tiết sản phẩm</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="editId">
+                    <div class="mb-2"><label>Title:</label> <input type="text" id="editTitle" class="form-control" readonly></div>
+                    <div class="mb-2"><label>Price:</label> <input type="number" id="editPrice" class="form-control" readonly></div>
+                    <div class="mb-2"><label>Category:</label> <input type="text" id="editCategory" class="form-control" readonly disabled></div>
+                    <div class="mb-2"><label>Mô tả:</label> <textarea id="editDescription" class="form-control" readonly></textarea></div>
+                </div>
+                <div class="modal-footer" id="modalFooter">
+                    <button class="btn btn-secondary" onclick="enableEditMode()">Sửa (Edit)</button>
+                    <!-- Nút Save ban đầu bị ẩn, chỉ hiện khi ấn nút Sửa -->
+                    <button class="btn btn-primary d-none" id="saveEditBtn" onclick="updateItem()">Cập nhật (Save)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Create Item -->
+    <div class="modal fade" id="createModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Tạo sản phẩm mới</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="createForm">
+                        <div class="mb-2"><label>Title:</label> <input type="text" id="createTitle" class="form-control" required></div>
+                        <div class="mb-2"><label>Price ($):</label> <input type="number" id="createPrice" class="form-control" required></div>
+                        <div class="mb-2">
+                            <label>Category ID:</label>
+                            <select id="createCategoryId" class="form-select">
+                                <option value="1">Clothes</option>
+                                <option value="2">Electronics</option>
+                                <option value="3">Furniture</option>
+                                <option value="4">Shoes</option>
+                                <option value="5">Others</option>
+                            </select>
+                        </div>
+                        <div class="mb-2"><label>Mô tả:</label> <textarea id="createDescription" class="form-control" required></textarea></div>
+                        <div class="mb-2"><label>Image URL:</label> <input type="url" id="createImage" class="form-control" value="https://placeimg.com/640/480/any" required></div>
+                        <button type="submit" class="btn btn-success mt-3 w-100">Tạo mới</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Nhúng Bootstrap JS và Script tự viết -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
